@@ -1,11 +1,15 @@
+/* eslint-disable react/state-in-constructor */
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { MdShoppingCart } from 'react-icons/md';
 import api from '../../services/api';
+import * as CartActions from '../../store/modules/cart/actions';
 import { formatPrice } from '../../util/format';
 
 import { ProductList } from './styles';
 
-export default class Home extends Component {
+class Home extends Component {
   state = {
     products: [],
   };
@@ -21,6 +25,12 @@ export default class Home extends Component {
     this.setState({ products: data });
   }
 
+  handleAddProduct = product => {
+    const { addToCart } = this.props;
+
+    addToCart(product);
+  };
+
   render() {
     const { products } = this.state;
     return (
@@ -31,7 +41,10 @@ export default class Home extends Component {
             <strong>{product.title}</strong>
             <span>{product.priceFormatted}</span>
 
-            <button type="button">
+            <button
+              type="button"
+              onClick={() => this.handleAddProduct(product)}
+            >
               <div>
                 <MdShoppingCart size={16} color="#FFF" />
               </div>
@@ -44,3 +57,8 @@ export default class Home extends Component {
     );
   }
 }
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(null, mapDispatchToProps)(Home);
